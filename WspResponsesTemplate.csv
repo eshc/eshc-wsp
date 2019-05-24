@@ -1,0 +1,2 @@
+Name,Email,Restrictions,StayLength,Comments,PreferredRoles,RatherNotRoles
+Rudi Horn,dyn-eshc@rudi-horn.de,None,7 days,None,MyRole:MyOtherRole,NotThisRole:OrThisOne

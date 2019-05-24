@@ -1,0 +1,105 @@
+@model SurveyModel
+@{
+  ViewData["Title"] = "ESHC WSP Survey";
+}
+
+<form method="POST">
+  <div asp-validation-summary="All" class="text-danger"></div>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2" for="Name">Name:</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" placeholder="Enter your Name" name="Name" value="@Model.Name" />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2" for="Email">Email:</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" placeholder="Enter your Email" name="Email" value="@Model.Email" />
+    </div>
+  </div>
+
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2" for="StayLength">Length of stay:</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" placeholder=">1 year" 
+        name="StayLength" value="@Model.StayLength" />
+    </div>
+    <small id="stayLengthHelp" class="form-text text-muted">
+      Some roles are better suited for members planning to stay at the coop longer. 
+      This doesn't have to be an exact amount, but if you know you will only be here 
+      for 6 months just state this here. If you know you will be at least a year, just
+      specify '>1 year'.
+    </small>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2" for="Restrictions">Restrictions:</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" placeholder="Enter any information you feel might limit your ability to do some roles." 
+        name="Restrictions">@Model.Restrictions</textarea>
+    </div>
+  </div>
+
+  <h3>Role Preference</h3>
+
+  <div class="form-group row">
+    <small id="stayLengthHelp" class="form-text text-muted">
+      Drag your preferred roles into the correct order. Note that it is also important to 
+      drag the roles you would prefer not to have in the correct order, as we cannot 
+      guarrantee we will be able to offer you a preferred role.
+    </small>
+    <div class="col-sm-6">
+      <h4>Preferred Roles</h4>
+      <ul id="sortable1" class="list-group connected-sortable">
+        @foreach(var role in Model.PreferredRoles) {
+        <li class="list-group-item">
+          <input type="hidden" name="PreferredRoles" value="@role" />
+          @Model.RoleDescriptions[@role]
+        </li>
+        }
+      </ul>
+    </div>
+    <div class="col-sm-6">
+      <h4>Not wanted roles</h4>
+      <ul id="sortable2" class="list-group connected-sortable">
+        @foreach(var role in Model.RatherNotRoles) {
+        <li class="list-group-item">
+          <input type="hidden" name="RatherNotRoles" value="@role" />
+          @Model.RoleDescriptions[@role]
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2" for="Comments">Comments:</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" placeholder="Enter any further comments you have." 
+        name="Comments">@Model.Comments</textarea>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>
+
+@section scripts {
+  <script>
+    $( function() { 
+      $("#sortable1, #sortable2").sortable({
+        connectWith: ".connected-sortable",
+        update: function(event, ui) {
+          $("#sortable1 input").attr('name', 'PreferredRoles')
+          $("#sortable2 input").attr('name', 'RatherNotRoles')
+        }
+      }).disableSelection();
+    });
+  </script>
+}
