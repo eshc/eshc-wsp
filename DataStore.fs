@@ -4,21 +4,31 @@ open System
 open FSharp.Data
 open System.IO
 
-type WspRoles = CsvProvider<"WspRoles.csv">
-
-module Roles = 
-    type Role = WspRoles.Row
-
-    let getRoles () = 
+module Helpers =
+    let csvPath file =
         let wd = Directory.GetCurrentDirectory()
-        let file = Path.Combine(wd, "WspRoles.csv")
-        use csv = WspRoles.Load file
+        let file = Path.Combine(wd, file)
+        file
+
+module WorkingGroups = 
+    type Provider = CsvProvider<"WspWorkingGroups.csv">
+    type WorkingGroup = Provider.Row
+
+    let getWorkingGroups () =
+        use csv = Helpers.csvPath "WspWorkingGroups.csv" |> Provider.Load
         csv.Rows |> Seq.toList
 
-type WspEntries = CsvProvider<"WspResponsesTemplate.csv">
+module Roles = 
+    type Provider = CsvProvider<"WspRoles.csv">
+    type Role = Provider.Row
+
+    let getRoles () = 
+        use csv = Helpers.csvPath "WspRoles.csv" |> Provider.Load
+        csv.Rows |> Seq.toList
 
 module Entries = 
-    type Entry = WspEntries.Row
+    type Provider = CsvProvider<"WspResponsesTemplate.csv">
+    type Entry = Provider.Row
 
     let addEntry entry =
         let wd = Directory.GetCurrentDirectory()
@@ -29,9 +39,9 @@ module Entries =
         let contents =
             use entries = 
                 if File.Exists file |> not then
-                    WspEntries.GetSample()
+                    Provider.GetSample()
                 else
-                    WspEntries.Load file
+                    Provider.Load file
             let entries' = entries.Append([entry])
             entries'.SaveToString()
 

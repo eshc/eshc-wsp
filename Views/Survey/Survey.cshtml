@@ -41,23 +41,48 @@
       <textarea class="form-control" placeholder="Enter any information you feel might limit your ability to do some roles." 
         name="Restrictions">@Model.Restrictions</textarea>
     </div>
+    <small id="restrictionsHelp" class="form-text text-muted">
+      If you have any restrictions such as being away often, inability to do physical work or similar please state them here.
+    </small>
   </div>
 
   <h3>Role Preference</h3>
+  <div class="form-group row working-groups">
+    @foreach(var wg in Model.WorkingGroups.Values) {
+      <span class="badge m-1 @wg.Style">@wg.Name</span>
+    }
+  </div>
 
   <div class="form-group row">
-    <small id="stayLengthHelp" class="form-text text-muted">
-      Drag your preferred roles into the correct order. Note that it is also important to 
-      drag the roles you would prefer not to have in the correct order, as we cannot 
-      guarrantee we will be able to offer you a preferred role.
+    <small id="rolesHelp" class="form-text text-muted">
+      Drag all the roles into your order of preference. Precedence is given to the top role
+      in preferred roles, then the roles below that, followed by the top roles in not wanted
+      roles and then the roles below that. As such it is important to also order the roles you 
+      would prefer not to have, as we cannot guarrantee you will be able to get one of your 
+      preferred roles.
     </small>
+    <small class="form-text text-muted">
+      Roles are generally supposed to be accessible, and your choice in roles should more reflect
+      what you would like to do rather than what you can do / your past experience. You are also in 
+      way restricted to your role, and the co-operative is all about helping out with other roles
+      or even unrelated tasks is always encouraged!
+    </small>
+    <small class="form-text text-muted">
+      You can find a description of all the roles as well as whom to contact in the <a href="/downloads/booklet_of_roles.pdf">Booklet of Roles</a>.
+      If you have any questions email <a href="mailto:participation@eshc.coop">participation@eshc.coop</a>.
+    </small>
+  </div>
+
+  <div class="form-group row">
     <div class="col-sm-6">
       <h4>Preferred Roles</h4>
       <ul id="sortable1" class="list-group connected-sortable">
         @foreach(var role in Model.PreferredRoles) {
-        <li class="list-group-item">
+          var rm = Model.Roles[role];
+        <li class="list-group-item draggable mr-2 @rm.Style">
           <input type="hidden" name="PreferredRoles" value="@role" />
-          @Model.RoleDescriptions[@role]
+          <span class="oi oi-move" title="move" aria-hidden="true"></span>
+          @rm.Name
         </li>
         }
       </ul>
@@ -66,9 +91,11 @@
       <h4>Not wanted roles</h4>
       <ul id="sortable2" class="list-group connected-sortable">
         @foreach(var role in Model.RatherNotRoles) {
-        <li class="list-group-item">
+          var rm = Model.Roles[role];
+        <li class="list-group-item draggable mr-2 @rm.Style">
           <input type="hidden" name="RatherNotRoles" value="@role" />
-          @Model.RoleDescriptions[@role]
+          <span class="oi oi-move" title="move" aria-hidden="true"></span>
+          @rm.Name
         </li>
         }
       </ul>
@@ -81,6 +108,14 @@
       <textarea class="form-control" placeholder="Enter any further comments you have." 
         name="Comments">@Model.Comments</textarea>
     </div>
+    <small id="commentsHelp" class="form-text text-muted">
+      You aren't required to enter anything in particular here, but if you have any skills that 
+      would be particularly useful for particular roles you can state them here. This could be 
+      things like experience with construction, a large amount of energy for motivating other people, 
+      good organizational skills, programming experience or similar. Skills don't factor in as much
+      as preference or motivation, as we would like everyone to have the opportunity to do the work
+      they would like. Do not write more than a sentence or two.
+    </small>
   </div>
 
   <div class="form-group row">

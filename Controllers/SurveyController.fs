@@ -9,15 +9,19 @@ open System.Collections.Generic
 type SurveyController () =
     inherit Controller()
 
-    member private this.GetRoleLookup() = 
-        Dictionary<string, string>(
+    member private this.GetRoleLookup (model : SurveyModel) = 
+        model.WorkingGroups <- 
+            Dictionary(
+                WorkingGroups.getWorkingGroups () 
+                |> Seq.map (fun r -> KeyValuePair(r.WG, WorkingGroupModel(Name = r.Name, Style = r.Style))))
+        model.Roles <- Dictionary(
             Roles.getRoles () 
-            |> Seq.map (fun r -> KeyValuePair(r.Role, r.Description)))
+            |> Seq.map (fun r -> KeyValuePair(r.Role, RoleModel(Name = r.Description, Style = model.WorkingGroups.[r.WG].Style))))
+        model
 
     member this.Survey() =
-        let lookup = this.GetRoleLookup()
-        let preferred = lookup.Keys |> Seq.toList
-        let model = SurveyModel(PreferredRoles = preferred, RoleDescriptions = lookup)
+        let model = SurveyModel() |> this.GetRoleLookup
+        model.PreferredRoles <- model.Roles.Keys |> Seq.toList
         this.View(model)
 
     [<HttpPost>]
@@ -30,8 +34,7 @@ type SurveyController () =
             |> List.ofSeq
         model.PreferredRoles <- preferred
         model.RatherNotRoles <- ratherNot
-        let lookup = this.GetRoleLookup()
-        model.RoleDescriptions <- lookup
+        let model = this.GetRoleLookup model
         if this.ModelState.IsValid then
             let preferred = preferred |> Seq.map string |> String.concat ":"
             let ratherNot = ratherNot |> Seq.map string |> String.concat ":"
